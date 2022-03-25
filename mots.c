@@ -18,8 +18,15 @@ int loadDict(char* filepath)
 {
     // load file
 
+    FILE *dico = fopen(filepath, "r");
+
+    if (dico == NULL) {
+        printf("Erro: could not open file %s", filepath);
+    }
+
     // save in a ordered struct 
 
+    fclose(dico);
 }
 
 /**
