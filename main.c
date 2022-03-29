@@ -1,11 +1,17 @@
-
+#include <stdio.h>
 
 
 int main(int argc, char const *argv[])
 {
     int tries = 0;
 
-    // load dict
+    loadDict("./liste_complete_triee.txt");
+
+    char* mot = malloc(sizeof(char*)*32);
+
+    fscanf(stdin, "%s\n", &mot);
+
+    searchDict(mot);
 
     // choose a random word
 
