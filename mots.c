@@ -123,20 +123,42 @@ char* randomWord()
  * char* userWord : the word given by the user
  * 
  * return:
- * a table of int : 0 = char are the same, 1 = char are different
+ * a table of int : 0 = char are the same, 1 = char are different, 2 = misposed
  * 
- * // TODO : manage misposed char
  * 
  */
 int* verifyWord(char* toFind, char* userWord) {
 
     int wordSize = strlen(toFind);
 
+    int* usedChar = malloc(sizeof(int)*wordSize);
+    for (int i = 0; i < wordSize; i++) {
+        usedChar[i] = 0;
+    }
+
     int* verifTable = malloc(sizeof(int)*wordSize);
 
     // find char that are identical
     for (int i = 0; i < wordSize; i++) {
-        verifTable[i] = 1 - (userWord[i] == toFind[i]);
+        verifTable[i] = 1; // by default the char considered as different
+
+        if (userWord[i] == toFind[i]) { // if the char are the same
+            verifTable[i] = 0;
+
+            usedChar[i] = 1; // mark the char as used
+        } else { // if they are different
+
+            for (int j = 0; j < wordSize; j++) {
+                
+                if (!usedChar[j]) { // if the char isn't used
+                    if (userWord[i] == toFind[j]) { // if the char are the same
+                        verifTable[i] = 2; // then the char is just misposed
+
+                        usedChar[j] = 1; // mark the char as used
+                    }
+                }
+            }
+        }
     }
 
     return verifTable;
