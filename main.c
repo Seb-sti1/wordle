@@ -110,7 +110,7 @@ int main(int argc, char const *argv[])
     }
 
     if (won) {
-        printf("Bravo !!! Vous avez trouvé le mot en %d tentative.\n", tries);
+        printf("Bravo !!! Vous avez trouvé le mot en %d tentative(s).\n", tries);
     } else {
         printf("Dommage :'(... Le mot était %s. Tu auras plus de chance la prochaine fois hihi ^^ !\n", toFind);
     }

@@ -131,6 +131,7 @@ int* verifyWord(char* toFind, char* userWord) {
 
     int wordSize = strlen(toFind);
 
+    // create a 0 array
     int* usedChar = malloc(sizeof(int)*wordSize);
     for (int i = 0; i < wordSize; i++) {
         usedChar[i] = 0;
@@ -146,19 +147,22 @@ int* verifyWord(char* toFind, char* userWord) {
             verifTable[i] = 0;
 
             usedChar[i] = 1; // mark the char as used
-        } else { // if they are different
+        }
+    }
 
-            for (int j = 0; j < wordSize; j++) {
-                
-                if (!usedChar[j]) { // if the char isn't used
-                    if (userWord[i] == toFind[j]) { // if the char are the same
-                        verifTable[i] = 2; // then the char is just misposed
 
-                        usedChar[j] = 1; // mark the char as used
-                    }
+    // find char misposed char
+    for (int i = 0; i < wordSize; i++) {
+        for (int j = 0; j < wordSize; j++) {
+            if (!usedChar[j]) { // if the char isn't used
+                if (userWord[i] == toFind[j]) { // if the char are the same
+                    verifTable[i] = 2; // then the char is just misposed
+
+                    usedChar[j] = 1; // mark the char as used
                 }
             }
         }
+        
     }
 
     return verifTable;
