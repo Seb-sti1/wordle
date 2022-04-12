@@ -45,14 +45,21 @@ char* askWord(int wordSize) {
     int i = 0;
 
     while (i < wordSize) {
-        char c = fgetc(stdin);
+        char mot;
+        fscanf(stdin, %s, &mot);
         
-        if (isalpha(c)) {
-            userWord[i] = c;
-            i++;
+        int len = strlen(mot);
+
+        if (len != wordSize) {
+            printf("Attention ! Le mot ne fait pas %d lettres.", wordSize);
+            return askWord(int wordSize);
+        }
+
+        if (!searchDict(&mot)) {
+            printf("Le mot n'est pas dans le dictionnaire.");
+            return askWord(int wordSize);
         }
     }
-
 
     return userWord;
 }
