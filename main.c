@@ -41,25 +41,24 @@ char* askWord(int wordSize) {
 
     char* userWord = malloc(sizeof(char*)*(wordSize+1));
     userWord[wordSize] = '\0';
+
+
+    char mot [42];                      //because réponse à la vie
+    fscanf(stdin, "%s", &mot);
     
-    int i = 0;
+    int len = strlen(&mot);
 
-    while (i < wordSize) {
-        char mot;
-        fscanf(stdin, %s, &mot);
-        
-        int len = strlen(mot);
-
-        if (len != wordSize) {
-            printf("Attention ! Le mot ne fait pas %d lettres.", wordSize);
-            return askWord(int wordSize);
-        }
-
-        if (!searchDict(&mot)) {
-            printf("Le mot n'est pas dans le dictionnaire.");
-            return askWord(int wordSize);
-        }
+    if (len != wordSize) {
+        printf("Attention ! Le mot ne fait pas %d lettres.\n", wordSize);
+        return askWord(wordSize);
     }
+
+    if (!searchDict(&mot)) {
+        printf("Le mot n'est pas dans le dictionnaire.\n");
+        return askWord(wordSize);
+    }
+
+    strcpy(userWord, &mot);
 
     return userWord;
 }
