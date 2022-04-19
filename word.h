@@ -1,7 +1,11 @@
-#ifndef WORLD_H_   /* Include guard */
-#define WORLD_H_
+#ifndef WORD_H_   /* Include guard */
+#define WORD_H_
 
+int getDictionarySize();
 
+char** getDictionary();
+
+void destroyDictonary();
 
 int loadDict(char* filepath, int wordSize);
 
@@ -12,4 +16,4 @@ char* randomWord();
 int* verifyWord(char* toFind, char* userWord);
 
 
-#endif // WORLD_H_
+#endif // WORD_H_

@@ -3,7 +3,9 @@
 #include <string.h>
 #include <stdbool.h>
 #include <ctype.h> 
-#include "world.h"
+
+#include "word.h"
+#include "bot.h"
 
 
 /**
@@ -67,8 +69,6 @@ char* askWord(int wordSize) {
 
 
 
-
-
 int main(int argc, char const *argv[])
 {
     int tries = 0;
@@ -110,12 +110,25 @@ int main(int argc, char const *argv[])
                     printCharInColor(verif[i], userWord[i]);
                 }
                 printf("\n");
+
+
+                /* too remove
+                int numberOfCompatibleWord = -1;
+                char** t = compatibleWords(userWord, 5, verif, getDictionary(), getDictionarySize(), &numberOfCompatibleWord);
+
+                printf("%s\n", t[0]);
+
+                printf("%d\n", numberOfCompatibleWord);*/
+
+                free(verif);
             }
 
             tries++;
         } else {
             printf("Ce mot n'existe pas !\n");
         }
+
+        free(userWord);
     }
 
     if (won) {
@@ -123,6 +136,18 @@ int main(int argc, char const *argv[])
     } else {
         printf("Dommage :'(... Le mot était %s. Tu auras plus de chance la prochaine fois hihi ^^ !\n", toFind);
     }
+
+    destroyDictonary();
     
     return 0;
+}
+
+
+void displayIntArray(int* array, int size) { // to remove
+
+    for (int i = 0; i < size; i++) {
+        printf("|%d", array[i]); 
+    }
+    printf("|\n");
+
 }

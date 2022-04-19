@@ -5,12 +5,19 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "world.h"
+#include "word.h"
 
 // the dict
-int size=50000;
+int dictSize=50000;
 char* dictionary[50000];
 
+int getDictionarySize() {
+    return dictSize;
+}
+
+char** getDictionary() {
+    return dictionary;
+}
 
 /**
  * Load the dict into a global static variable
@@ -52,13 +59,18 @@ int loadDict(char* filepath, int wordSize)
                 i++;
             }
         }
-        
     }
-    size = i;
+    dictSize = i;
 
     fclose(dico);
 
     return true;
+}
+
+void destroyDictonary() {
+    for (int i = 0; i < dictSize; i++) {
+        free(dictionary[i]);
+    }
 }
 
 /**
@@ -74,7 +86,7 @@ int loadDict(char* filepath, int wordSize)
 int searchDict(char* word)
 {
     int front = 0;
-    int end = size;
+    int end = dictSize;
 
     while (end - front > 1) {
         int middle = (end + front)/2;
@@ -107,7 +119,7 @@ char* randomWord()
     srand(time(NULL)); // reset random seed
 
   	//method to derive a random number
-  	int n = rand() % (size + 1);
+  	int n = rand() % (dictSize + 1);
 
   	return dictionary[n];
 }
@@ -132,12 +144,12 @@ int* verifyWord(char* toFind, char* userWord) {
     
 
     // identify char that are already assined
-    int* usedCharToFind = malloc(sizeof(int)*wordSize);
+    int usedCharToFind[wordSize];
     for (int i = 0; i < wordSize; i++) {
         usedCharToFind[i] = 0;
     }
 
-    int* usedCharUserWord = malloc(sizeof(int)*wordSize);
+    int usedCharUserWord[wordSize];
     for (int i = 0; i < wordSize; i++) {
         usedCharUserWord[i] = 0;
     }
