@@ -1,5 +1,5 @@
-#ifndef MOTS_H_   /* Include guard */
-#define MOTS_H_
+#ifndef WORLD_H_   /* Include guard */
+#define WORLD_H_
 
 
 
@@ -12,4 +12,4 @@ char* randomWord();
 int* verifyWord(char* toFind, char* userWord);
 
 
-#endif // MOTS_H_
+#endif // WORLD_H_

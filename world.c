@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "mots.h"
+#include "world.h"
 
 // the dict
 int size=50000;
@@ -128,16 +128,24 @@ char* randomWord()
  * 
  */
 int* verifyWord(char* toFind, char* userWord) {
-
     int wordSize = strlen(toFind);
+    
 
-    // create a 0 array
-    int* usedChar = malloc(sizeof(int)*wordSize);
+    // identify char that are already assined
+    int* usedCharToFind = malloc(sizeof(int)*wordSize);
     for (int i = 0; i < wordSize; i++) {
-        usedChar[i] = 0;
+        usedCharToFind[i] = 0;
     }
 
+    int* usedCharUserWord = malloc(sizeof(int)*wordSize);
+    for (int i = 0; i < wordSize; i++) {
+        usedCharUserWord[i] = 0;
+    }
+
+    
     int* verifTable = malloc(sizeof(int)*wordSize);
+
+
 
     // find char that are identical
     for (int i = 0; i < wordSize; i++) {
@@ -146,7 +154,8 @@ int* verifyWord(char* toFind, char* userWord) {
         if (userWord[i] == toFind[i]) { // if the char are the same
             verifTable[i] = 0;
 
-            usedChar[i] = 1; // mark the char as used
+            usedCharToFind[i] = 1;
+            usedCharUserWord[i] = 1;
         }
     }
 
@@ -154,11 +163,14 @@ int* verifyWord(char* toFind, char* userWord) {
     // find char misposed char
     for (int i = 0; i < wordSize; i++) {
         for (int j = 0; j < wordSize; j++) {
-            if (!usedChar[j]) { // if the char isn't used
-                if (userWord[i] == toFind[j]) { // if the char are the same
-                    verifTable[i] = 2; // then the char is just misposed
+            if (!usedCharUserWord[i]) { // if the char hasn't been mark
+                if (!usedCharToFind[j]) { // if the char hasn't been mark
+                    if (userWord[i] == toFind[j]) { // if the char are the same 
+                        verifTable[i] = 2; // then the char is just misposed
 
-                    usedChar[j] = 1; // mark the char as used
+                        usedCharUserWord[i] = 1;
+                        usedCharToFind[j] = 1;
+                    }
                 }
             }
         }
