@@ -31,6 +31,7 @@ void printCharInColor(int validation, char c) {
 
 
 
+
 /**
  * ask for a string of 5 char
  * 
@@ -41,21 +42,29 @@ char* askWord(int wordSize) {
 
     char* userWord = malloc(sizeof(char*)*(wordSize+1));
     userWord[wordSize] = '\0';
-    
-    int i = 0;
 
-    while (i < wordSize) {
-        char c = fgetc(stdin);
-        
-        if (isalpha(c)) {
-            userWord[i] = c;
-            i++;
-        }
+
+    char mot [42];                      //because réponse à la vie
+    fscanf(stdin, "%s", &mot);
+    
+    int len = strlen(&mot);
+
+    if (len != wordSize) {
+        printf("Attention ! Le mot ne fait pas %d lettres.\n", wordSize);
+        return askWord(wordSize);
     }
 
+    if (!searchDict(&mot)) {
+        printf("Le mot n'est pas dans le dictionnaire.\n");
+        return askWord(wordSize);
+    }
+
+    strcpy(userWord, &mot);
 
     return userWord;
 }
+
+
 
 
 
@@ -117,5 +126,3 @@ int main(int argc, char const *argv[])
     
     return 0;
 }
-
-
