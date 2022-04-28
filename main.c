@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <ctype.h> 
+#include <errno.h>
 
 #include "word.h"
 #include "bot.h"
@@ -66,20 +67,14 @@ char* askWord(int wordSize) {
     return userWord;
 }
 
-
-
-
-int main(int argc, char const *argv[])
-{
+void humanPlay() {
     int tries = 0;
     bool won = false;
-
-    printf("Bienvenue dans le wordle d'IN104 !\n");
-    printf("Par Sébastien Kerbourc'h et Adrien Wallon\n\n");
 
     // TODO : add word size
     int wordSize = 5;
 
+    // TODO : Choix du dictionnaire
     printf("Chargemenent de la liste de mots...\n");
     
     if (loadDict("./liste_complete_triee.txt", wordSize)) {
@@ -111,15 +106,6 @@ int main(int argc, char const *argv[])
                 }
                 printf("\n");
 
-
-                /* too remove
-                int numberOfCompatibleWord = -1;
-                char** t = compatibleWords(userWord, 5, verif, getDictionary(), getDictionarySize(), &numberOfCompatibleWord);
-
-                printf("%s\n", t[0]);
-
-                printf("%d\n", numberOfCompatibleWord);*/
-
                 free(verif);
             }
 
@@ -137,7 +123,47 @@ int main(int argc, char const *argv[])
         printf("Dommage :'(... Le mot était %s. Tu auras plus de chance la prochaine fois hihi ^^ !\n", toFind);
     }
 
+    
     destroyDictonary();
+        
+}
+
+
+int main(int argc, char const *argv[])
+{
+    printf("Bienvenue dans le wordle d'IN104 !\n");
+    printf("Par Sébastien Kerbourc'h et Adrien Wallon\n\n");
+
+    bool running = true;
+    while (running) {
+        printf("Que souhaitez vous faire ?\n");
+        printf("1) Jouer à wordle\n");
+        printf("2) Quitter\n");
+
+        int i = -1;
+        int match = fscanf(stdin, "%d", &i);
+
+        switch (i)
+        {
+        case 1:
+            humanPlay();
+            break;
+        case 2:
+            printf("A+ :-)");
+            running = false;
+            break;
+        default:
+            printf("Cette option n'existe pas...\n");
+
+            if (!match) {
+                // go to the end of the stream
+                char t[1];
+                fscanf(stdin, "%s", t);
+            }
+            break;
+        }
+
+    }
     
     return 0;
 }
