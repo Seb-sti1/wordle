@@ -1,6 +1,7 @@
 #ifndef BOT_H_   /* Include guard */
 #define BOT_H_
 
+#include <stdbool.h>
 
 /**
  * @brief test the testword is compatible with word and the certain pattern
