@@ -47,21 +47,21 @@ char* askWord(int wordSize) {
 
 
     char mot [42];                      //because réponse à la vie
-    fscanf(stdin, "%s", &mot);
+    fscanf(stdin, "%s", mot);
     
-    int len = strlen(&mot);
+    int len = strlen(mot);
 
     if (len != wordSize) {
         printf("Attention ! Le mot ne fait pas %d lettres.\n", wordSize);
         return askWord(wordSize);
     }
 
-    if (!searchDict(&mot)) {
+    if (!searchDict(mot)) {
         printf("Le mot n'est pas dans le dictionnaire.\n");
         return askWord(wordSize);
     }
 
-    strcpy(userWord, &mot);
+    strcpy(userWord, mot);
 
     return userWord;
 }
