@@ -25,6 +25,10 @@ La boucle principale du jeu est dans `main.c`. Le chargement du dictionnaire, la
 ## Todo
 
 - Faire une interface console plus jolie (regarder [ncurses](http://hughm.cs.ukzn.ac.za/~murrellh/os/notes/ncurses.html) ou [termbox2](https://github.com/termbox/termbox2))
+- Finir le bot par entropy
+- Faire un bot par fréquence mot/lettre
+- Creer un moyen de tester les bots sur tous les mots
+- Ajouter le choix du nombre de lettre, le dictonnaire et le nombre de tentative
 
 ## Sources
 
