@@ -128,6 +128,75 @@ void humanPlay() {
         
 }
 
+void botPlayWithEntropy() {
+    int tries = 0;
+    bool won = false;
+
+    // TODO : add word size
+    int wordSize = 5;
+
+    // TODO : Choix du dictionnaire
+    printf("Chargemenent de la liste de mots...\n");
+    
+    if (loadDict("./liste_complete_triee.txt", wordSize)) {
+        printf("La liste a été correctement chargée !\n");
+    } else {
+        printf("La liste n'a pas pu être chargée !\n");
+        exit(-1);
+    }
+
+
+    printf("Choix d'un mot aléatoire !\n");
+    char* toFind = "flush";// randomWord();
+
+    char** dictionary = getDictionary();
+    int dictSize = getDictionarySize();
+
+
+    while (tries < 6 && !won) {
+        char* botWord;
+
+
+        if (tries == 0 && wordSize == 5) {
+            botWord = "aeree";
+        } else {
+            botWord = getBestWordWithEntropy(wordSize, dictionary, dictSize);
+        }
+        
+        printf("Le bot joue %s\n", botWord);
+
+        if (strcmp(toFind, botWord) == 0) {
+            won = true;
+        } else {
+            // compare with the words
+            int* verif = verifyWord(toFind, botWord);
+            
+            for (int i = 0; i < wordSize; i++) {
+                printCharInColor(verif[i], botWord[i]);
+            }
+            printf("\n");
+
+            char** newDictionary = compatibleWords(botWord, wordSize, verif, dictionary, dictSize, &dictSize);
+            free(dictionary);
+            
+            dictionary = newDictionary;
+
+            free(verif);
+        }
+
+        tries++;
+    }
+
+    if (won) {
+        printf("Le bot a trouvé en %d tentative(s).\n", tries);
+    } else {
+        printf("Le bot n'a pas trouvé le mot %s...\n", toFind);
+    }
+
+    
+    destroyDictonary();
+}
+
 
 int main(int argc, char const *argv[])
 {
@@ -138,7 +207,9 @@ int main(int argc, char const *argv[])
     while (running) {
         printf("Que souhaitez vous faire ?\n");
         printf("1) Jouer à wordle\n");
-        printf("2) Quitter\n");
+        printf("2) Faire jouer le bot (entropy)\n");
+
+        printf("9) Quitter\n");
 
         int i = -1;
         int match = fscanf(stdin, "%d", &i);
@@ -149,6 +220,9 @@ int main(int argc, char const *argv[])
             humanPlay();
             break;
         case 2:
+            botPlayWithEntropy();
+            break;
+        case 9:
             printf("A+ :-)");
             running = false;
             break;

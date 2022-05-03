@@ -4,6 +4,7 @@
 
 #include "bot.h"
 #include "word.h"
+#include "entropy.h"
 
 
 bool isCompatible(char* word, int wordSize, int* pattern, char* testWord) {
@@ -73,4 +74,26 @@ char** compatibleWords(char* word, int wordSize, int* pattern, char* testWords[]
     }
 
     return compatible;
+}
+
+
+char* getBestWordWithEntropy(int wordSize, char** dictionary, int dictionarySize) {
+
+    char* bestWord = "";
+    float bestEntropy = 0;
+
+
+    for (int wordIdx = 0; wordIdx < dictionarySize; wordIdx++) { // for every word in the dictionnary
+
+        char* word = dictionary[wordIdx];
+
+        float entropy = computeEntropy(word, wordSize, dictionary, dictionarySize);
+
+        if (bestEntropy < entropy) {
+            bestWord = word;
+            bestEntropy = entropy;
+        }
+    }
+
+    return bestWord;
 }

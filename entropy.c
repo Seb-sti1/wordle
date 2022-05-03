@@ -5,45 +5,32 @@
 #include <math.h>
 #include <stdlib.h>
 
-struct wordScore {
-    char* word;
-    float score;
-};
 
 
+float computeEntropy(char* word, int wordSize, char** dictionary, int dictionarySize) {
 
-struct wordScore** computeEntropy(char* word, int wordSize, char** dictionary, int dictionarySize) {
+    double entropy = 0;
 
-    struct wordScore** wordScores = malloc(sizeof(struct wordScore) * dictionarySize);
+    for (int i = 0; i < pow(3, wordSize); i ++ ) { // for every pattern that could possibly happen
 
-    for (int wordIdx = 0; wordIdx < dictionarySize; wordIdx++) { // for every word in the dictionnary
+        int* pattern = toBase3(i, wordSize);
+        int numberOfCompatibleWord = -1;
 
-        char* word = dictionary[wordIdx];
+        
+        // get how many words are compatible with the given pattern
+        char** garbage = compatibleWords(word, wordSize, pattern, dictionary, dictionarySize, &numberOfCompatibleWord);
+        free(garbage);
 
-
-        struct wordScore* score = malloc(sizeof(struct wordScore) * dictionarySize);
-
-        score->word = word;
-        score->score = 0;
-
-        for (int i = 0; i < pow(3, wordSize); i ++ ) { // for every pattern that could possibly happen
-
-            int* pattern = toBase3(i, wordSize);
-            int numberOfCompatibleWord = -1;
-
+        if (numberOfCompatibleWord > 0) {
+            //float p = numberOfCompatibleWord/dictionarySize; // the portion of the dictionnary
             
-            // get how many words are compatible with the given pattern
-            compatibleWords(word, wordSize, pattern, dictionary, dictionarySize, &numberOfCompatibleWord);
-
-            float p = numberOfCompatibleWord/dictionarySize; // the portion of the dictionnary
-
-            score->score += -p*log2(p);
             // add p * log_2(1/p) at the score (it's the entropy)
-
-            free(pattern);
+            entropy += ((double) numberOfCompatibleWord)/dictionarySize*log2(((double) dictionarySize)/numberOfCompatibleWord);
         }
+
+        free(pattern);
     }
 
-    return wordScores;
+    return entropy;
 }
  
