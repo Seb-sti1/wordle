@@ -176,10 +176,7 @@ void botPlayWithEntropy() {
             }
             printf("\n");
 
-            char** newDictionary = compatibleWords(botWord, wordSize, verif, dictionary, dictSize, &dictSize);
-            free(dictionary);
-            
-            dictionary = newDictionary;
+            char** dictionary = compatibleWords(botWord, wordSize, verif, dictionary, dictSize, &dictSize);
 
             free(verif);
         }
