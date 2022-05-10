@@ -98,3 +98,29 @@ char* getBestWordWithEntropy(int wordSize, char** dictionary, int dictionarySize
 
     return bestWord;
 }
+
+
+
+
+char* getBestWordWithOccurence(int wordSize, char** dictionary, int dictionarySize) {                   //occurence-based algorithm
+
+    char* bestWord = "";
+    float bestScore = 0;
+
+
+    for (int wordIdx = 0; wordIdx < dictionarySize; wordIdx++) { // for every word in the dictionnary
+
+        char* word = dictionary[wordIdx];
+
+        int score = scoreSum(word, wordSize);
+                                                                //choose best algorithm.
+        //int score = scoreMux(word, wordSize);
+
+        if (bestScore < score) {
+            bestWord = word;
+            bestScore = score;
+        }
+    }
+
+    return bestWord;
+}
