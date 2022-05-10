@@ -7,6 +7,7 @@
 
 #include "word.h"
 #include "bot.h"
+#include "entropy.h"
 
 
 /**
@@ -147,7 +148,7 @@ void botPlayWithEntropy() {
 
 
     printf("Choix d'un mot aléatoire !\n");
-    char* toFind = "flush";// randomWord();
+    char* toFind = randomWord();
 
     char** dictionary = getDictionary();
     int dictSize = getDictionarySize();
@@ -176,7 +177,11 @@ void botPlayWithEntropy() {
             }
             printf("\n");
 
-            char** dictionary = compatibleWords(botWord, wordSize, verif, dictionary, dictSize, &dictSize);
+
+            printf("%s\n", dictionary[0]);
+
+            char** tempdictionary = compatibleWords(botWord, wordSize, verif, dictionary, dictSize, &dictSize);
+            dictionary = tempdictionary;
 
             free(verif);
         }
@@ -206,6 +211,9 @@ int main(int argc, char const *argv[])
         printf("1) Jouer à wordle\n");
         printf("2) Faire jouer le bot (entropy)\n");
 
+
+        printf("8) Pour des testes\n");
+
         printf("9) Quitter\n");
 
         int i = -1;
@@ -218,6 +226,39 @@ int main(int argc, char const *argv[])
             break;
         case 2:
             botPlayWithEntropy();
+            break;
+        case 8:
+            // TODO : Choix du dictionnaire
+            printf("Chargemenent de la liste de mots...\n");
+            
+            if (loadDict("./liste_complete_triee.txt", 5)) {
+                printf("La liste a été correctement chargée !\n");
+            } else {
+                printf("La liste n'a pas pu être chargée !\n");
+                exit(-1);
+            }
+
+            /*
+            int num = 0;
+            
+            int pattern[5] = {0,1,2,0,1};
+
+            char** compatible = compatibleWords("abaca", 5, pattern, getDictionary(), getDictionarySize(), &num);
+
+            for (int j = 0; j < num; j++) {
+                printf("%s\n", compatible[j]);
+            } 
+            */
+
+
+            for (int wordIdx = 0; wordIdx < getDictionarySize(); wordIdx++) { // for every word in the dictionnary
+
+                char* word = getDictionary()[wordIdx];
+
+                float entropy = computeEntropy(word, 5, getDictionary(), getDictionarySize());
+
+                printf("%s : %f", word, entropy);
+            }
             break;
         case 9:
             printf("A+ :-)");
