@@ -41,4 +41,15 @@ char** compatibleWords(char* word, int wordSize, int* pattern, char* testWords[]
 char* getBestWordWithEntropy(int wordSize, char** dictionary, int dictionarySize);
 
 
+/**
+ * @brief Get the Best Word With Occurence (of letter). Warning only work with a French dictionary
+ * 
+ * @param wordSize the size of the word (number of letters)
+ * @param dictionary the dictionary
+ * @param dictionarySize the size of the dictionary
+ * @param sumOccurrence if the score is the sum of the score of each letters or the product
+ * @return char* the best word
+ */
+char* getBestWordWithOccurence(int wordSize, char** dictionary, int dictionarySize, bool sumOccurrence);
+
 #endif // WORLD_H_

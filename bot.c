@@ -6,6 +6,7 @@
 #include "bot.h"
 #include "word.h"
 #include "entropy.h"
+#include "occurence.h"
 
 
 bool isCompatible(char* word, int wordSize, int* pattern, char* testWord) {
@@ -99,22 +100,23 @@ char* getBestWordWithEntropy(int wordSize, char** dictionary, int dictionarySize
     return bestWord;
 }
 
-
-
-
-char* getBestWordWithOccurence(int wordSize, char** dictionary, int dictionarySize) {                   //occurence-based algorithm
+char* getBestWordWithOccurence(int wordSize, char** dictionary, int dictionarySize, bool sumOccurrence) {  //occurence-based algorithm
 
     char* bestWord = "";
-    float bestScore = 0;
+    float bestScore = -1;
 
 
     for (int wordIdx = 0; wordIdx < dictionarySize; wordIdx++) { // for every word in the dictionnary
 
         char* word = dictionary[wordIdx];
 
-        int score = scoreSum(word, wordSize);
-                                                                //choose best algorithm.
-        //int score = scoreMux(word, wordSize);
+        int score = 0;
+        
+        if (sumOccurrence) {
+            score = scoreSum(word, wordSize);
+        } else {
+            score = scoreMux(word, wordSize);
+        }
 
         if (bestScore < score) {
             bestWord = word;

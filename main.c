@@ -9,6 +9,12 @@
 #include "bot.h"
 #include "entropy.h"
 
+int tries;
+bool won;
+
+int wordSize;
+char* toFind;
+
 
 /**
  * @brief print c with a specific color
@@ -68,12 +74,12 @@ char* askWord(int wordSize) {
     return userWord;
 }
 
-void humanPlay() {
-    int tries = 0;
-    bool won = false;
+void playRoutine() {
+    tries = 0;
+    won = false;
 
     // TODO : add word size
-    int wordSize = 5;
+    wordSize = 5;
 
     // TODO : Choix du dictionnaire
     printf("Chargemenent de la liste de mots...\n");
@@ -85,11 +91,12 @@ void humanPlay() {
         exit(-1);
     }
 
-
     printf("Choix d'un mot aléatoire !\n");
-    char* toFind = randomWord();
+    toFind = randomWord();
+}
 
 
+void humanPlay() {
     while (tries < 6 && !won) {
         char* userWord = askWord(wordSize);
 
@@ -119,51 +126,37 @@ void humanPlay() {
     }
 
     if (won) {
-        printf("Bravo !!! Vous avez trouvé le mot en %d tentative(s).\n", tries);
+        printf("\033[1;32mBravo !!!\033[0;37m Vous avez trouvé le mot en %d tentative(s).\n", tries);
     } else {
         printf("Dommage :'(... Le mot était %s. Tu auras plus de chance la prochaine fois hihi ^^ !\n", toFind);
     }
 
-    
-    destroyDictonary();
-        
+    destroyDictonary();    
 }
 
-void botPlayWithEntropy() {
-    int tries = 0;
-    bool won = false;
-
-    // TODO : add word size
-    int wordSize = 5;
-
-    // TODO : Choix du dictionnaire
-    printf("Chargemenent de la liste de mots...\n");
-    
-    if (loadDict("./liste_complete_triee.txt", wordSize)) {
-        printf("La liste a été correctement chargée !\n");
-    } else {
-        printf("La liste n'a pas pu être chargée !\n");
-        exit(-1);
-    }
-
-
-    printf("Choix d'un mot aléatoire !\n");
-    char* toFind = randomWord();
-
+void botPlay(int botType) {
     char** dictionary = getDictionary();
     int dictSize = getDictionarySize();
-
 
     while (tries < 6 && !won) {
         char* botWord;
 
-
-        if (tries == 0 && wordSize == 5) {
-            botWord = "aeree";
-        } else {
-            botWord = getBestWordWithEntropy(wordSize, dictionary, dictSize);
+        switch (botType) {
+        case 0: // entropy
+            if (tries == 0 && wordSize == 5) {
+                botWord = "aeree";
+            } else {
+                botWord = getBestWordWithEntropy(wordSize, dictionary, dictSize);
+            }
+            break;
+        case 1: // sum freq letters
+            botWord = getBestWordWithOccurence(wordSize, dictionary, dictSize, true);
+            break;
+        case 2: // product freq letters
+            botWord = getBestWordWithOccurence(wordSize, dictionary, dictSize, false);
+            break;
         }
-        
+
         printf("Le bot joue %s\n", botWord);
 
         if (strcmp(toFind, botWord) == 0) {
@@ -176,9 +169,6 @@ void botPlayWithEntropy() {
                 printCharInColor(verif[i], botWord[i]);
             }
             printf("\n");
-
-
-            printf("%s\n", dictionary[0]);
 
             char** tempdictionary = compatibleWords(botWord, wordSize, verif, dictionary, dictSize, &dictSize);
             dictionary = tempdictionary;
@@ -210,10 +200,11 @@ int main(int argc, char const *argv[])
         printf("Que souhaitez vous faire ?\n");
         printf("1) Jouer à wordle\n");
         printf("2) Faire jouer le bot (entropy)\n");
+        printf("3) Faire jouer le bot (somme frequence lettres)\n");
+        printf("4) Faire jouer le bot (produit frequence lettres)\n");
 
 
         printf("8) Pour des testes\n");
-
         printf("9) Quitter\n");
 
         int i = -1;
@@ -222,10 +213,14 @@ int main(int argc, char const *argv[])
         switch (i)
         {
         case 1:
+            playRoutine();
             humanPlay();
             break;
         case 2:
-            botPlayWithEntropy();
+        case 3:
+        case 4:
+            playRoutine();
+            botPlay(i-2);
             break;
         case 8:
             // TODO : Choix du dictionnaire
