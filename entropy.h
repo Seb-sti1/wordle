@@ -3,6 +3,4 @@
 
 float computeEntropy(char* word, int wordSize, char** dictionary, int dictionarySize);
 
-
-
 #endif // ENTROPY_H_

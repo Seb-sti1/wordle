@@ -15,7 +15,6 @@
  */
 bool isCompatible(char* word, int wordSize, int* pattern, char* testWord);
 
-
 /**
  * @brief for every words in testWords it test if it is compatible with the patten and the word
  * 
@@ -51,5 +50,20 @@ char* getBestWordWithEntropy(int wordSize, char** dictionary, int dictionarySize
  * @return char* the best word
  */
 char* getBestWordWithOccurence(int wordSize, char** dictionary, int dictionarySize, bool sumOccurrence);
+
+/**
+ * @deprecated
+ * 
+ * @brief test the testword is compatible with word and the certain pattern
+ * 
+ * @param word the word
+ * @param testword the word to test the compatibility
+ * @param pattern the pattern (0 = char are the same, 1 = char are different, 2 = misposed)
+ * @param wordSize the size of the words
+ * @return true if the two are compatible
+ * @return false if the two aren't compatible
+ */
+bool isCompatible_broken(char* word, int wordSize, int* pattern, char* testWord);
+
 
 #endif // WORLD_H_

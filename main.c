@@ -226,7 +226,7 @@ int main(int argc, char const *argv[])
             // TODO : Choix du dictionnaire
             printf("Chargemenent de la liste de mots...\n");
             
-            if (loadDict("./liste_complete_triee.txt", 5)) {
+            if (loadDict("./mots_5.txt", 5)) {
                 printf("La liste a été correctement chargée !\n");
             } else {
                 printf("La liste n'a pas pu être chargée !\n");
@@ -252,7 +252,7 @@ int main(int argc, char const *argv[])
 
                 float entropy = computeEntropy(word, 5, getDictionary(), getDictionarySize());
 
-                printf("%s : %f", word, entropy);
+                printf("%s : %f\n", word, entropy);
             }
             break;
         case 9:

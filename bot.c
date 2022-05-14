@@ -9,7 +9,89 @@
 #include "occurence.h"
 
 
+
 bool isCompatible(char* word, int wordSize, int* pattern, char* testWord) {
+    
+    int* shouldHavePattern = verifyWord(testWord, word); // the pattern that should have been return if testWord was the word to find
+
+    for (int i = 0; i < wordSize; i++) {
+        if (shouldHavePattern[i] != pattern[i]) {
+            free(shouldHavePattern);
+            return false;
+        }
+    } 
+
+    free(shouldHavePattern);
+    return true;
+}
+
+char** compatibleWords(char* word, int wordSize, int* pattern, char* testWords[], int testWordsSize, int* numberOfCompatibleWord) {
+
+    char** compatible = malloc(sizeof(char*)*testWordsSize);
+   
+    *numberOfCompatibleWord = 0;
+
+    for (int i = 0; i < testWordsSize; i++) {
+        if (isCompatible(word, wordSize, pattern, testWords[i])) {
+            compatible[*numberOfCompatibleWord] = testWords[i];
+
+            *numberOfCompatibleWord += 1;
+        }
+    }
+
+    return compatible;
+}
+
+char* getBestWordWithEntropy(int wordSize, char** dictionary, int dictionarySize) {
+
+    char* bestWord = "";
+    float bestEntropy = 0;
+
+
+    for (int wordIdx = 0; wordIdx < dictionarySize; wordIdx++) { // for every word in the dictionnary
+
+        char* word = dictionary[wordIdx];
+
+        float entropy = computeEntropy(word, wordSize, dictionary, dictionarySize);
+
+        if (bestEntropy < entropy) {
+            bestWord = word;
+            bestEntropy = entropy;
+        }
+    }
+
+    return bestWord;
+}
+
+char* getBestWordWithOccurence(int wordSize, char** dictionary, int dictionarySize, bool sumOccurrence) {  //occurence-based algorithm
+
+    char* bestWord = "";
+    float bestScore = -1;
+
+
+    for (int wordIdx = 0; wordIdx < dictionarySize; wordIdx++) { // for every word in the dictionnary
+
+        char* word = dictionary[wordIdx];
+
+        int score = 0;
+        
+        if (sumOccurrence) {
+            score = scoreSum(word, wordSize);
+        } else {
+            score = scoreMux(word, wordSize);
+        }
+
+        if (bestScore < score) {
+            bestWord = word;
+            bestScore = score;
+        }
+    }
+
+    return bestWord;
+}
+
+
+bool isCompatible_broken(char* word, int wordSize, int* pattern, char* testWord) {
     
     int requiredNumberOfApparition[26];
     bool isNumberStrict[26];
@@ -58,71 +140,4 @@ bool isCompatible(char* word, int wordSize, int* pattern, char* testWord) {
 
 
     return true;
-}
-
-
-char** compatibleWords(char* word, int wordSize, int* pattern, char* testWords[], int testWordsSize, int* numberOfCompatibleWord) {
-
-    char** compatible = malloc(sizeof(char*)*testWordsSize);
-   
-    *numberOfCompatibleWord = 0;
-
-    for (int i = 0; i < testWordsSize; i++) {
-        if (isCompatible(word, wordSize, pattern, testWords[i])) {
-            compatible[*numberOfCompatibleWord] = testWords[i];
-
-            *numberOfCompatibleWord += 1;
-        }
-    }
-
-    return compatible;
-}
-
-
-char* getBestWordWithEntropy(int wordSize, char** dictionary, int dictionarySize) {
-
-    char* bestWord = "";
-    float bestEntropy = 0;
-
-
-    for (int wordIdx = 0; wordIdx < dictionarySize; wordIdx++) { // for every word in the dictionnary
-
-        char* word = dictionary[wordIdx];
-
-        float entropy = computeEntropy(word, wordSize, dictionary, dictionarySize);
-
-        if (bestEntropy < entropy) {
-            bestWord = word;
-            bestEntropy = entropy;
-        }
-    }
-
-    return bestWord;
-}
-
-char* getBestWordWithOccurence(int wordSize, char** dictionary, int dictionarySize, bool sumOccurrence) {  //occurence-based algorithm
-
-    char* bestWord = "";
-    float bestScore = -1;
-
-
-    for (int wordIdx = 0; wordIdx < dictionarySize; wordIdx++) { // for every word in the dictionnary
-
-        char* word = dictionary[wordIdx];
-
-        int score = 0;
-        
-        if (sumOccurrence) {
-            score = scoreSum(word, wordSize);
-        } else {
-            score = scoreMux(word, wordSize);
-        }
-
-        if (bestScore < score) {
-            bestWord = word;
-            bestScore = score;
-        }
-    }
-
-    return bestWord;
 }
