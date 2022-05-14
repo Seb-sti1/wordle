@@ -1,8 +1,8 @@
 
 #include <stdlib.h>
+#include <stdio.h>
 
 
-// https://fr.wikipedia.org/wiki/Table_des_bases
 int* toBase3(int n, int arraySize) {
 
     int* array = malloc(sizeof(int)*arraySize);
@@ -33,5 +33,22 @@ int fromBase3(int* array, int arraySize) {
     } 
 
     return power;
+
+}
+
+void printCharInColor(int validation, char c) {
+    switch (validation) {
+    case 0:
+        printf("\033[1;32m%c\033[0;37m", c);
+        break;
+    case 1:
+        printf("\033[1;31m%c\033[0;37m", c);
+        break;    
+    case 2:
+        printf("\033[1;33m%c\033[0;37m", c);
+        break;   
+    default:
+        break;
+    }
 
 }

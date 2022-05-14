@@ -2,6 +2,7 @@
 #define UTILS_H_
 
 
+// https://fr.wikipedia.org/wiki/Table_des_bases
 /**
  * @brief parse a integer to a base 3 array
  * 
@@ -20,6 +21,15 @@ int* toBase3(int n, int arraySize);
  * @return int the integer
  */
 int fromBase3(int* array, int arraySize);
+
+
+/**
+ * @brief print c with a specific color
+ * 
+ * @param validation : the stat of the caracter (given by verifyWord)
+ * @param c : the char
+ */
+void printCharInColor(int validation, char c);
 
 
 #endif // UTILS_H_
