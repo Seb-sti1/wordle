@@ -156,7 +156,7 @@ bool isCompatible_broken(char* word, int wordSize, int* pattern, char* testWord)
 char** compatibleWords_broken(char* word, int wordSize, int* pattern, char* testWords[], int testWordsSize, int* numberOfCompatibleWord) {
 
     char** compatible = malloc(sizeof(char*)*testWordsSize);
-   
+
     *numberOfCompatibleWord = 0;
 
     for (int i = 0; i < testWordsSize; i++) {

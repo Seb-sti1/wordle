@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <ctype.h> 
 #include <errno.h>
+#include <math.h>
 
 #include "word.h"
 #include "bot.h"
@@ -11,6 +12,7 @@
 #include "entropy.h"
 
 int wordSize;
+int dictionaryUsed;
 char* toFind;
 
 /**
@@ -90,20 +92,40 @@ void playRoutine() {
     printf("Par defaut, ce jeu se joue avec des mots de 5 lettres. Avec combien de lettre souhaitez vous jouer ?\n");
     wordSize = askUInt(); // BUG if the user input 0
 
-    // TODO : Choix du dictionnaire
-    if (!loadDict("./liste_complete_triee.txt", wordSize)) {
+
+    char* dictionaryPath[3] = {
+        "./french_all_size.txt",
+        "./english_all_size.txt",
+        "./creole_haitien_all_size.txt"//https://www.potomitan.info/vedrine/lexique_index.php#a
+    };
+
+    char* dictionaryName[3] = {
+        "Français toutes tailles de mots",
+        "Anglais toutes tailles de mots",
+        "Créole Haitien toutes tailles de mots"
+    };
+
+    printf("Choisissez le dictionnaire à utiliser :\n");
+    dictionaryUsed = askChoice(dictionaryName, 3);
+
+
+    if (!loadDict(dictionaryPath[dictionaryUsed], wordSize)) {
         printf("La liste n'a pas pu être chargée !\n");
         exit(-1);
     }
 
-    printf("Il y a %d mots dans le dictionnaire !", getDictionarySize());
+    printf("Il y a %d mots dans le dictionnaire !\n", getDictionarySize());
+
+    if (getDictionarySize() <= 0) {
+        printf("Il n'y a pas de mot dans le dictionnaire chargé !\n");
+    } 
 
     toFind = randomWord();
 }
 
 
 void humanPlay() {
-    printf("A vous de jouer !");
+    printf("A vous de jouer !\n");
         
     int tries = 0;
     bool won = false;
@@ -161,7 +183,7 @@ void botPlay() {
 
     int botType = askChoice(choices, 4);
 
-    printf("C'est partie !\n");
+    printf("C'est parti !\n");
 
     while (tries < 6 && !won) {
         char* botWord;
@@ -169,14 +191,14 @@ void botPlay() {
         // choose the word to play
         switch (botType) {
         case 0: // entropy fixed
-            if (tries == 0 && wordSize == 5) {
+            if (tries == 0 && wordSize == 5 && dictionaryUsed == 0) {
                 botWord = "tarie";
             } else {
                 botWord = getBestWordWithEntropy(wordSize, dictionary, dictSize);
             }
             break;
         case 1: // entropy broken
-            if (tries == 0 && wordSize == 5) {
+            if (tries == 0 && wordSize == 5 && dictionaryUsed == 0) {
                     botWord = "aeree";
             } else {
                 botWord = getBestWordWithEntropy_broken(wordSize, dictionary, dictSize);
@@ -255,27 +277,18 @@ int main(int argc, char const *argv[])
             botPlay();
             break;
         case 8:
-            // TODO : Choix du dictionnaire
-            printf("Chargemenent de la liste de mots...\n");
-            
-            if (loadDict("./mots_5.txt", 5)) {
-                printf("La liste a été correctement chargée !\n");
-            } else {
-                printf("La liste n'a pas pu être chargée !\n");
-                exit(-1);
-            }
+            playRoutine();
 
+            //char** dict = getDictionary();
+            //int dictSize = getDictionarySize();
+
+            
+           
             /*
-            int num = 0;
-            
-            int pattern[5] = {0,1,2,0,1};
-
-            char** compatible = compatibleWords("abaca", 5, pattern, getDictionary(), getDictionarySize(), &num);
-
-            for (int j = 0; j < num; j++) {
-                printf("%s\n", compatible[j]);
-            } 
-            */
+            // permet de trouver quel mot est boosté par l'algo entropy cassé
+            // tetee avec +11,75 par rapport à l'entropy fonctionnelle
+            char* wordtofind;
+            float diff = -100;
 
 
             for (int wordIdx = 0; wordIdx < getDictionarySize(); wordIdx++) { // for every word in the dictionnary
@@ -284,9 +297,93 @@ int main(int argc, char const *argv[])
 
                 float entropy = computeEntropy(word, 5, getDictionary(), getDictionarySize());
                 float entropybro = computeEntropy_broken(word, 5, getDictionary(), getDictionarySize());
-
-                printf("%s : %f %f\n", word, entropy, entropybro);
+                
+                if (fabs(entropybro - entropy) > diff) {
+                    wordtofind = word;
+                    diff = fabs(entropybro - entropy);
+                }
+                printf("%s :\t\t%.2f %.2f | %.2f\n", word, entropy, entropybro, fabs(entropybro - entropy));
             }
+
+            printf("%s %f \n", wordtofind, diff);*/
+
+
+ /*
+
+            // permet de trouver un pattern où le nombre de mot compatible est tres different entre entropy corrigé et entropy cassé
+            // pattern 122 (1778 en plus) ou 124 (1778 en plus) ou 148 (1597 en plus)
+
+
+            char* word = "tetee";
+
+            int patternExample;
+            int delta = -1;
+
+            for (int i = 0; i < pow(3, wordSize); i ++ ) { // for every pattern that could possibly happen
+
+                int* pattern = toBase3(i, wordSize);
+                int nbr = -1;
+                int nbrBro = -1;
+
+                
+                // get how many words are compatible with the given pattern
+                char** garbage = compatibleWords(word, wordSize, pattern, dict, dictSize, &nbr);
+                free(garbage);
+                
+                garbage = compatibleWords_broken(word, wordSize, pattern, dict, dictSize, &nbrBro);
+                free(garbage);
+
+                if (abs(nbrBro - nbr) > delta) {
+                    delta = abs(nbrBro - nbr);
+                    patternExample = i;
+                }
+
+                printf("%d) %d %d %d\n ", i, nbr, nbrBro, abs(nbrBro - nbr));
+                
+                free(pattern);
+            }
+
+            printf("\n\n%d\n", patternExample);
+
+            for (int i = 0; i < wordSize; i++) {
+                printCharInColor(toBase3(patternExample, wordSize)[i], word[i]);
+            }
+            */
+
+            /*
+            char* word = "tetee";
+
+            int* pattern = toBase3(122, wordSize);
+
+            for (int i = 0; i < wordSize; i++) {
+                printCharInColor(pattern[i], word[i]);
+            }
+            printf("\n");
+            int nbr = -1;
+
+            // get how many words are compatible with the given pattern
+            char** comp = compatibleWords_broken(word, wordSize, pattern, dict, dictSize, &nbr);
+            
+            for (int i = 0; i < nbr; i++) {
+
+                if (comp[i][1] != 'e' && comp[i][3] != 'e' && comp[i][4] != 'e') {
+                    printf("%s\n", comp[i]);
+
+                    
+                    int* verif = verifyWord(comp[i], word);
+            
+                    for (int j = 0; j < wordSize; j++) {
+                        printCharInColor(verif[j], comp[i][j]);
+                    }
+
+                    printf("\n");
+                    
+                    free(verif);
+                }
+            }
+
+            free(pattern);*/
+
             break;
         case 9:
             printf("A+ :-)");
