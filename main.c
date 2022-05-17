@@ -14,6 +14,7 @@
 int wordSize;
 int dictionaryUsed;
 char* toFind;
+int maxTries;
 
 /**
  * @brief ask for a string of 5 char. This function will not return until a string of 5 char is given by the user.
@@ -89,8 +90,10 @@ int askChoice(char* choices[], int nbrOfChoices) {
 
 
 void playRoutine() {
-    printf("Par defaut, ce jeu se joue avec des mots de 5 lettres. Avec combien de lettre souhaitez vous jouer ?\n");
+    printf("Ce jeu se joue avec des mots de 5 lettres. Avec combien de lettre souhaitez-vous jouer ?\n");
     wordSize = askUInt(); // BUG if the user input 0
+    printf("Une partie comporte traditionnellement 6 essais. Combien en désirez-vous ?\n");
+    maxTries = askUInt();
 
 
     char* dictionaryPath[3] = {
@@ -130,7 +133,7 @@ void humanPlay() {
     int tries = 0;
     bool won = false;
 
-    while (tries < 6 && !won) {
+    while (tries < maxTries && !won) {
         char* userWord = askWord(wordSize);
 
         //check if the word exist
@@ -185,7 +188,7 @@ void botPlay() {
 
     printf("C'est parti !\n");
 
-    while (tries < 6 && !won) {
+    while (tries < maxTries && !won) {
         char* botWord;
 
         // choose the word to play
