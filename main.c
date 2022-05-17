@@ -16,6 +16,7 @@ int dictionaryUsed;
 char* toFind;
 int maxTries;
 
+
 /**
  * @brief ask for a string of 5 char. This function will not return until a string of 5 char is given by the user.
  * 
@@ -48,6 +49,7 @@ char* askWord(int wordSize) {
     return userWord;
 }
 
+
 /**
  * @brief ask for a usigned integer. This function will not return until an unsigned integer is given by the user.
  * 
@@ -73,6 +75,13 @@ int askUInt() {
 }
 
 
+/**
+ * @brief ask to choose between multiple possibilities
+ * 
+ * @param choices the different options
+ * @param nbrOfChoices the number of options
+ * @return int the option chosen
+ */
 int askChoice(char* choices[], int nbrOfChoices) {
     for (int i = 0; i < nbrOfChoices; i++) {
         printf("%d) %s\n", i, choices[i]);
@@ -88,10 +97,13 @@ int askChoice(char* choices[], int nbrOfChoices) {
     return ans;
 }
 
-
+/**
+ * @brief Ask for the number of letters, number of tries, the dictionary et word to find
+ */
 void playRoutine() {
     printf("Ce jeu se joue avec des mots de 5 lettres. Avec combien de lettre souhaitez-vous jouer ?\n");
     wordSize = askUInt(); // BUG if the user input 0
+
     printf("Une partie comporte traditionnellement 6 essais. Combien en désirez-vous ?\n");
     maxTries = askUInt();
 
@@ -99,7 +111,7 @@ void playRoutine() {
     char* dictionaryPath[3] = {
         "./french_all_size.txt",
         "./english_all_size.txt",
-        "./creole_haitien_all_size.txt"//https://www.potomitan.info/vedrine/lexique_index.php#a
+        "./creole_haitien_all_size.txt"
     };
 
     char* dictionaryName[3] = {
@@ -126,7 +138,9 @@ void playRoutine() {
     toFind = randomWord();
 }
 
-
+/**
+ * @brief let a human play
+ */
 void humanPlay() {
     printf("A vous de jouer !\n");
         
@@ -170,6 +184,10 @@ void humanPlay() {
     destroyDictonary();    
 }
 
+
+/**
+ * @brief let a bot play
+ */
 void botPlay() {
     int tries = 0;
     bool won = false;
@@ -246,7 +264,13 @@ void botPlay() {
     destroyDictonary();
 }
 
-
+/**
+ * @brief launch the main routine
+ * 
+ * @param argc 0
+ * @param argv nothing
+ * @return int end status
+ */
 int main(int argc, char const *argv[])
 {
     printf("Bienvenue dans le wordle d'IN104 !\n");
@@ -254,7 +278,7 @@ int main(int argc, char const *argv[])
 
     bool running = true;
     while (running) {
-        printf("Que souhaitez-vous faire ?\n");
+        printf("\n\nQue souhaitez-vous faire ?\n");
 
         printf("0) Afficher les règles de wordle\n");
         printf("1) Jouer à wordle\n");
@@ -269,7 +293,11 @@ int main(int argc, char const *argv[])
         switch (i)
         {
         case 0:
-            // TODO print rules
+            printf("Vous devez devinez un mot de 5 lettres en 6 essais.\nA chaque essai"
+             " le programme vous donne des indices :\nles lettres vertes correspondent aux "
+             "lettres bien placées,\nles lettres jaunes correspondent aux lettres "
+             "existantes dans le mot mais aux mauvaises endroits,\net en blanc les "
+             "lettres n'existant pas dans le mot.\n");
             break;
         case 1:
             playRoutine();
