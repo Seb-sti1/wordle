@@ -19,20 +19,7 @@ char** getDictionary() {
     return dictionary;
 }
 
-/**
- * Load the dict into a global static variable
- * 
- * 
- * arg:
- * char* filepath : file path
- * int wordSize : the size of the word
- * 
- * return: 
- * int (bool) success
- * 
- * 
- */
-int loadDict(char* filepath, int wordSize)
+bool loadDict(char* filepath, int wordSize)
 {
     // load file
 
@@ -73,17 +60,7 @@ void destroyDictonary() {
     }
 }
 
-/**
- * Search a word in the dictonary
- * 
- * arg:
- * char* word : the word to search
- * 
- * return:
- * int (bool) found 
- * 
- */
-int searchDict(char* word)
+bool searchDict(char* word)
 {
     int front = 0;
     int end = dictSize;
@@ -107,13 +84,6 @@ int searchDict(char* word)
 }
 
 
-/**
- * Search for a random word
- * 
- * return:
- * a random word
- * 
- */
 char* randomWord()
 {
     srand(time(NULL)); // reset random seed
@@ -124,21 +94,6 @@ char* randomWord()
   	return dictionary[n];
 }
 
-
-
-
-/**
- * Verify word
- * 
- * arg :
- * char* toFind : the word to find
- * char* userWord : the word given by the user
- * 
- * return:
- * a table of int : 0 = char are the same, 1 = char are different, 2 = misposed
- * 
- * 
- */
 int* verifyWord(char* toFind, char* userWord) {
     int wordSize = strlen(toFind);
     
