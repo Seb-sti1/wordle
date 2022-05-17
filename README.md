@@ -9,7 +9,8 @@ Pour jouer au jeu, il vous faudra cloner cette repo puis compiler le jeu !
 ```
 git clone https://github.com/Seb-sti1/wordle wordle
 cd wordle
-gcc *.c -o wordle.out -lm
+make
+make clean
 ./wordle.out
 ```
 
