@@ -32,6 +32,7 @@ La boucle principale du jeu est dans `main.c`. Le chargement du dictionnaire, la
 
 ### Fonctionnement humain
 
+```mermaid
 stateDiagram-v2
     state "Chargement dictionnaire" as dict
     state "Choix d'un mot à trouver" as random
@@ -51,6 +52,7 @@ stateDiagram-v2
     ind --> lose: après 6 tentatives
     lose --> [*]
     win --> [*]
+```
 
 ### Fonctionnement bot
 
