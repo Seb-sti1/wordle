@@ -56,7 +56,45 @@ stateDiagram-v2
 
 ### Fonctionnement bot
 
+```mermaid
+stateDiagram-v2
+    state "Chargement dictionnaire" as dict
+    state "Choix d'un mot à trouver" as random
+    
+    state "Verification du mot" as verif
+    state "Affichage indices" as ind
+    state "Message de victoire" as win
+    state "Message de defaite" as lose
 
+
+    state "Selection des mots compatibles" as comp
+    state "Calcul du score de chaque mot" as score
+    state "Choix du meilleur mot" as best
+
+
+    [*] --> dict
+    dict --> random
+    random --> IA
+    IA --> verif
+
+    state  IA {
+        [*] --> comp
+        comp --> score
+        score --> best
+        best --> [*]
+    }
+    verif --> ind: Mot incorrect
+    ind --> IA: avant 6 tentatives
+    verif --> win: Mot correct
+    ind --> lose: après 6 tentatives
+    lose --> [*]
+    win --> [*]
+```
+
+
+La partie "calcul du score de chaque mot" dépend de la méthode utilisée. Nous avons développé trois méthodes :
+- En utilisant des calculs d'entropies (qui traduisent le gain d'information en moyenne en jouant un certain mot)
+- En utilisant la somme ou le produit de la fréquence composant un mot
 
 ## Todo
 
