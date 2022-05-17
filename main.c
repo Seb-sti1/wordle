@@ -257,7 +257,7 @@ int main(int argc, char const *argv[])
         printf("1) Jouer à wordle\n");
         printf("2) Faire jouer un bot\n");
 
-        printf("8) Pour des testes\n");
+        printf("8) Pour des tests\n");
         printf("9) Quitter\n");
 
         int i = -1;
