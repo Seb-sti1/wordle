@@ -13,6 +13,8 @@
 float computeEntropy(char* word, int wordSize, char** dictionary, int dictionarySize);
 
 
+float computeEntropyOptimized(char* word, int wordSize, char** dictionary, int dictionarySize);
+
 /**
  * @deprecated
  * 

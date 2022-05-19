@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -59,7 +58,7 @@ char* getBestWordWithEntropy(int wordSize, char** dictionary, int dictionarySize
 
         char* word = dictionary[wordIdx];
 
-        float entropy = computeEntropy(word, wordSize, dictionary, dictionarySize);
+        float entropy = computeEntropyOptimized(word, wordSize, dictionary, dictionarySize);
 
         if (bestEntropy < entropy) {
             bestWord = word;
