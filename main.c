@@ -5,6 +5,7 @@
 #include <ctype.h> 
 #include <errno.h>
 #include <math.h>
+#include <time.h>
 
 #include "word.h"
 #include "bot.h"
@@ -184,27 +185,34 @@ void humanPlay() {
     destroyDictonary();    
 }
 
-
 /**
  * @brief let a bot play
+ * 
+ * @param testing: if the it's launch for testing purposes
+ * @param botType: -1 = ask ; 0-4 = the bot to play
+ * 
+ * @return int: the number of tries. if tries == maxTries then the bot failed to find the word
  */
-void botPlay() {
+int botPlay(bool testing, int botType) {
     int tries = 0;
     bool won = false;
 
     char** dictionary = getDictionary();
     int dictSize = getDictionarySize();
 
-    printf("Choisissez un bot pour cette partie :\n");
+    if (!testing) {
+        printf("Choisissez un bot pour cette partie :\n");
 
-    char* choices[4] = {"bot entropy corrigé",
-                        "bot entropy cassé",
-                        "bot occurence (somme de la fréquence de chaque lettre)",
-                        "bot occurence (produit de la fréquence de chaque lettre)"};
+        char* choices[4] = {"bot entropy corrigé",
+                            "bot entropy cassé",
+                            "bot occurence (somme de la fréquence de chaque lettre)",
+                            "bot occurence (produit de la fréquence de chaque lettre)"};
 
-    int botType = askChoice(choices, 4);
+        botType = askChoice(choices, 4);
+        
+        printf("C'est parti !\n");
+    }
 
-    printf("C'est parti !\n");
 
     while (tries < maxTries && !won) {
         char* botWord;
@@ -233,6 +241,7 @@ void botPlay() {
             break;
         }
 
+        //if (!testing)
         printf("Le bot joue %s\n", botWord);
 
         if (strcmp(toFind, botWord) == 0) {
@@ -241,27 +250,35 @@ void botPlay() {
             // compare with the words
             int* verif = verifyWord(toFind, botWord);
             
-            for (int i = 0; i < wordSize; i++) {
-                printCharInColor(verif[i], botWord[i]);
+            if (!testing) {
+                for (int i = 0; i < wordSize; i++) {
+                    printCharInColor(verif[i], botWord[i]);
+                }
+                printf("\n");
             }
-            printf("\n");
 
             char** tempdictionary = compatibleWords(botWord, wordSize, verif, dictionary, dictSize, &dictSize);
             dictionary = tempdictionary; // TODO prevent memory leak without deleting the main dictonary
 
             free(verif);
+
+            tries++;
         }
-
-        tries++;
     }
 
-    if (won) {
-        printf("Le bot a trouvé en %d tentative(s).\n", tries);
-    } else {
-        printf("Le bot n'a pas trouvé le mot %s...\n", toFind);
+    //if (!testing) {
+        if (won) {
+            printf("Le bot a trouvé en %d tentative(s).\n", tries+1);
+        } else {
+            printf("Le bot n'a pas trouvé le mot %s...\n", toFind);
+        }
+    //}
+
+    if (!testing) {
+        destroyDictonary();
     }
 
-    destroyDictonary();
+    return tries+1;
 }
 
 /**
@@ -273,6 +290,13 @@ void botPlay() {
  */
 int main(int argc, char const *argv[])
 {
+
+    char* dictionaryPath[3] = {
+                "./french_all_size.txt",
+                "./english_all_size.txt",
+                "./creole_haitien_all_size.txt"
+            };
+
     printf("Bienvenue dans le wordle d'IN104 !\n");
     printf("Par Sébastien Kerbourc'h et Adrien Wallon\n\n");
 
@@ -283,6 +307,7 @@ int main(int argc, char const *argv[])
         printf("0) Afficher les règles de wordle\n");
         printf("1) Jouer à wordle\n");
         printf("2) Faire jouer un bot\n");
+        printf("3) Calculs des performances (attention c'est long)\n");
 
         printf("8) Pour des tests\n");
         printf("9) Quitter\n");
@@ -305,10 +330,156 @@ int main(int argc, char const *argv[])
             break;
         case 2:
             playRoutine();
-            botPlay();
+            botPlay(false, -1);
+            break;
+        case 3:
+            //csv line : wordsize; dict; word; algo; time; score
+            maxTries = 6;
+
+            int errors = 0;
+
+            FILE *dump = fopen("data.csv", "w");
+
+            /*char* dictionaryPath[3] = {
+                "./french_all_size.txt",
+                "./english_all_size.txt",
+                "./creole_haitien_all_size.txt"
+            };*/
+
+            for (int wordSizeIdx = 0; wordSizeIdx < 3; wordSizeIdx++) {
+                switch (wordSizeIdx)
+                {
+                case 0:
+                    wordSize = 5;
+                    break;
+                case 1:
+                    wordSize = 7;
+                    break;
+                case 2:
+                    wordSize = 12;
+                    break;
+                }
+
+                for (int dictIdx = 0; dictIdx < 3; dictIdx++) {
+                    dictionaryUsed = dictIdx; // change dictionary
+
+                    if (!loadDict(dictionaryPath[dictionaryUsed], wordSize)) {
+                        printf("La liste n'a pas pu être chargée !\n");
+                        exit(-1);
+                    }
+
+                    
+                    char** dictionary = getDictionary();
+                    int dictSize = getDictionarySize();
+
+                    for (int wordIdx = 0; wordIdx < dictSize; wordIdx++) {
+                        toFind = dictionary[wordIdx];
+
+                        for (int botIdx = 0; botIdx < 4; botIdx++) {
+                            
+                            clock_t begin = clock();
+                            int score = botPlay(true, botIdx);
+                            clock_t end = clock();
+                            double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+                            if (fprintf(dump, "%d;%d;%s;%d;%f;%d\n", wordSize, dictIdx, toFind, botIdx, time_spent, score) < 0 || wordIdx % 1000 == 0) {
+                                printf("%d;%d;%s;%d;%f;%d\n", wordSize, dictIdx, toFind, botIdx, time_spent, score);
+                                errors++;
+                            }
+
+
+                        }
+                    }
+
+                    fflush(dump);
+
+                    destroyDictonary();
+                }
+            }
+
+            printf("Tests de performance terminé ! %d erreur(s) ont eu liée.", errors);
+            fclose(dump);
+
             break;
         case 8:
-            playRoutine();
+            maxTries = 6;
+
+            errors = 0;
+
+            FILE *bestword = fopen("entropy_best.csv", "w");
+
+            for (int wordSizeIdx = 0; wordSizeIdx < 3; wordSizeIdx++) {
+                switch (wordSizeIdx)
+                {
+                case 0:
+                    wordSize = 5;
+                    break;
+                case 1:
+                    wordSize = 7;
+                    break;
+                case 2:
+                    wordSize = 12;
+                    break;
+                }
+
+                for (int dictIdx = 0; dictIdx < 3; dictIdx++) {
+                    dictionaryUsed = dictIdx; // change dictionary
+
+                    if (!loadDict(dictionaryPath[dictionaryUsed], wordSize)) {
+                        printf("La liste n'a pas pu être chargée !\n");
+                        exit(-1);
+                    }
+
+                    
+                    char** dictionary = getDictionary();
+                    int dictSize = getDictionarySize();
+
+                    for (int botIdx = 0; botIdx < 3; botIdx++) {
+                        clock_t begin;
+                        clock_t end;
+                        char* botWord;
+
+
+                        // choose the word to play
+                        switch (botIdx) {
+                        case 0: // entropy fixed
+                            begin = clock();
+                            botWord = getBestWordWithEntropy(wordSize, dictionary, dictSize);
+                            end = clock();
+                            break;
+                        case 1: // entropy broken
+                            begin = clock();
+                            //botWord = getBestWordWithEntropy_broken(wordSize, dictionary, dictSize);
+                            end = clock();
+                            break;
+                        case 2: // sum freq letters
+                            begin = clock();
+                            botWord = getBestWordWithOccurence(wordSize, dictionary, dictSize, true);
+                            end = clock();
+                            break;
+                        case 3: // product freq letters
+                            begin = clock();
+                            botWord = getBestWordWithOccurence(wordSize, dictionary, dictSize, false);
+                            end = clock();
+                            break;
+                        }
+                        
+                        double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+                        if (fprintf(bestword, "%d;%d;%d;%f;%s\n", wordSize, dictIdx, botIdx, time_spent, botWord) < 0) {
+                            errors++;
+                        }
+                        
+                        printf("%d;%d;%d;%f;%s\n", wordSize, dictIdx, botIdx, time_spent, botWord);
+                        
+                        fflush(bestword);
+                    }
+
+                    destroyDictonary();
+                }
+            }
+
+            printf("%d erreur(s) ont eu liée.", errors);
+            fclose(bestword);
+
 
             //char** dict = getDictionary();
             //int dictSize = getDictionarySize();
