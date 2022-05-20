@@ -308,6 +308,7 @@ int main(int argc, char const *argv[])
         printf("1) Jouer à wordle\n");
         printf("2) Faire jouer un bot\n");
         printf("3) Calculs des performances (attention c'est long)\n");
+        printf("4) Choix des meilleurs premiers mots (attention c'est long)\n");
 
         printf("8) Pour des tests\n");
         printf("9) Quitter\n");
@@ -400,7 +401,7 @@ int main(int argc, char const *argv[])
             fclose(dump);
 
             break;
-        case 8:
+        case 4:
             maxTries = 6;
 
             errors = 0;
@@ -447,9 +448,16 @@ int main(int argc, char const *argv[])
                             end = clock();
                             break;
                         case 1: // entropy broken
-                            begin = clock();
-                            //botWord = getBestWordWithEntropy_broken(wordSize, dictionary, dictSize);
-                            end = clock();
+                            if (wordSize == 5 || dictIdx == 3) {
+                                begin = clock();
+                                botWord = getBestWordWithEntropy_broken(wordSize, dictionary, dictSize);
+                                end = clock();
+                            } else {
+                                begin = clock();
+                                botWord = "non";
+                                end = clock();
+                            }
+
                             break;
                         case 2: // sum freq letters
                             begin = clock();
@@ -477,10 +485,11 @@ int main(int argc, char const *argv[])
                 }
             }
 
-            printf("%d erreur(s) ont eu liée.", errors);
+            printf("%d erreur(s) ont eu lieu.", errors);
             fclose(bestword);
-
-
+            
+            break;
+        case 8:
             //char** dict = getDictionary();
             //int dictSize = getDictionarySize();
 
