@@ -97,12 +97,6 @@ La partie "calcul du score de chaque mot" dépend de la méthode utilisée. Nous
 - En utilisant des calculs d'entropies (qui traduisent le gain d'information en moyenne en jouant un certain mot)
 - En utilisant la somme ou le produit de la fréquence composant un mot
 
-## Todo
-
-- Faire une interface console plus jolie (regarder [ncurses](http://hughm.cs.ukzn.ac.za/~murrellh/os/notes/ncurses.html) ou [termbox2](https://github.com/termbox/termbox2))
-- Creer un moyen de tester les bots sur tous les mots
-
-
 
 ## Sources
 
