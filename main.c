@@ -176,6 +176,7 @@ void humanPlay() {
         free(userWord);
     }
 
+    
     if (won) {
         printf("\033[1;32mBravo !!!\033[0;37m Vous avez trouvé le mot en %d tentative(s).\n", tries);
     } else {
@@ -213,36 +214,83 @@ int botPlay(bool testing, int botType) {
         printf("C'est parti !\n");
     }
 
+    char* firstWordFiveLetters[4][3] = { // [botIdx][dictionaryIdx]
+        {"tarie", "tares", "kolet"},
+        {"aeree", "seres", "kakon"},
+        {"aeree", "essee", "prene"},
+        {"abaca", "aahed", "abiye"}};
+
+        
+    char* firstWordSevenLetters[4][3] = { // [botIdx][dictionaryIdx]
+        {"cariees", "tarlies", "kalakit"},
+        {"cariees", "tarlies", "kalakit"}, // used the same word as above (because it would take a century to find it)
+        {"entetee", "teepees", "malenge"},
+        {"abaissa", "aaronic", "adonayi"}};
+        
+    char* firstWordTwelveLetters[4][3] = { // [botIdx][dictionaryIdx]
+        {"reticulaires", "centralities", ""},
+        {"reticulaires", "centralities", ""}, // used the same word as above (because it would take a century to find it)
+        {"representees", "tennesseeans", ""},
+        {"abandonnames", "abalienating", ""}};
+
 
     while (tries < maxTries && !won) {
         char* botWord;
+        bool found = false;
 
+        
         // choose the word to play
-        switch (botType) {
-        case 0: // entropy fixed
-            if (tries == 0 && wordSize == 5 && dictionaryUsed == 0) {
-                botWord = "tarie";
-            } else {
-                botWord = getBestWordWithEntropy(wordSize, dictionary, dictSize);
+        if (tries == 0) {
+            switch (wordSize)
+            {
+            case 5:
+                found = true;
+                botWord = firstWordFiveLetters[botType][dictionaryUsed];
+                break;
+            case 7:
+                found = true;
+                botWord = firstWordSevenLetters[botType][dictionaryUsed];
+                break;
+            case 12:
+                found = true;
+                botWord = firstWordTwelveLetters[botType][dictionaryUsed];
+                break;
+            default:
+                printf("Info : La première tentative n'a pas été caculée.\n");
+                break;
             }
-            break;
-        case 1: // entropy broken
-            if (tries == 0 && wordSize == 5 && dictionaryUsed == 0) {
-                    botWord = "aeree";
-            } else {
-                botWord = getBestWordWithEntropy_broken(wordSize, dictionary, dictSize);
-            }
-            break;
-        case 2: // sum freq letters
-            botWord = getBestWordWithOccurence(wordSize, dictionary, dictSize, true);
-            break;
-        case 3: // product freq letters
-            botWord = getBestWordWithOccurence(wordSize, dictionary, dictSize, false);
-            break;
         }
 
-        //if (!testing)
-        printf("Le bot joue %s\n", botWord);
+        if (!found) {
+            switch (botType) {
+            case 0: // entropy fixed
+                if (tries == 0 && !testing) {
+                    printf("Le calcul de la première tentative peut être long (~10min)\n");
+                }
+
+                botWord = getBestWordWithEntropy(wordSize, dictionary, dictSize);                
+                break;
+            case 1: // entropy broken
+                if (tries == 0 && !testing) {
+                    printf("Attention ce bot est très lent. En fonction des paramètres utilisés, vous"
+                    " pouvez décéder avant que le bot ne joue un seul coup... Les paramètres significatifs"
+                    " sont : le nombre de lettre et la taille du dictionnaire.\n");
+                }
+                
+                botWord = getBestWordWithEntropy_broken(wordSize, dictionary, dictSize);
+                break;
+            case 2: // sum freq letters
+                botWord = getBestWordWithOccurence(wordSize, dictionary, dictSize, true);
+                break;
+            case 3: // product freq letters
+                botWord = getBestWordWithOccurence(wordSize, dictionary, dictSize, false);
+                break;
+            }
+        }
+        
+
+        if (!testing)
+            printf("Le bot joue %s\n", botWord);
 
         if (strcmp(toFind, botWord) == 0) {
             won = true;
@@ -266,15 +314,14 @@ int botPlay(bool testing, int botType) {
         }
     }
 
-    //if (!testing) {
+    if (!testing) {
+        
         if (won) {
             printf("Le bot a trouvé en %d tentative(s).\n", tries+1);
         } else {
             printf("Le bot n'a pas trouvé le mot %s...\n", toFind);
         }
-    //}
-
-    if (!testing) {
+        
         destroyDictonary();
     }
 
@@ -339,15 +386,9 @@ int main(int argc, char const *argv[])
 
             int errors = 0;
 
-            FILE *dump = fopen("data.csv", "w");
+            FILE *dump = fopen("data.csv", "a");
 
-            /*char* dictionaryPath[3] = {
-                "./french_all_size.txt",
-                "./english_all_size.txt",
-                "./creole_haitien_all_size.txt"
-            };*/
-
-            for (int wordSizeIdx = 0; wordSizeIdx < 3; wordSizeIdx++) {
+            for (int wordSizeIdx = 1; wordSizeIdx < 3; wordSizeIdx++) {
                 switch (wordSizeIdx)
                 {
                 case 0:
@@ -377,17 +418,28 @@ int main(int argc, char const *argv[])
                         toFind = dictionary[wordIdx];
 
                         for (int botIdx = 0; botIdx < 4; botIdx++) {
-                            
+                            int score = -1;
+
                             clock_t begin = clock();
-                            int score = botPlay(true, botIdx);
+                            if (botIdx != 1) {
+                                score = botPlay(true, botIdx);
+                            }
                             clock_t end = clock();
                             double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-                            if (fprintf(dump, "%d;%d;%s;%d;%f;%d\n", wordSize, dictIdx, toFind, botIdx, time_spent, score) < 0 || wordIdx % 1000 == 0) {
+
+                            int er = fprintf(dump, "%d;%d;%s;%d;%f;%d\n", wordSize, dictIdx, toFind, botIdx, time_spent, score);
+                            if (er < 0 || wordIdx % 1000 == 0) {
                                 printf("%d;%d;%s;%d;%f;%d\n", wordSize, dictIdx, toFind, botIdx, time_spent, score);
-                                errors++;
+
+                                if (er < 0)
+                                    errors++;
                             }
 
 
+                        }
+
+                        if (wordIdx % 1000 == 0) {
+                            printf("mot = %d\n", wordIdx);
                         }
                     }
 
@@ -434,7 +486,7 @@ int main(int argc, char const *argv[])
                     char** dictionary = getDictionary();
                     int dictSize = getDictionarySize();
 
-                    for (int botIdx = 0; botIdx < 3; botIdx++) {
+                    for (int botIdx = 0; botIdx < 4; botIdx++) {
                         clock_t begin;
                         clock_t end;
                         char* botWord;
