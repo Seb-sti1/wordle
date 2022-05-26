@@ -90,7 +90,7 @@ int askChoice(char* choices[], int nbrOfChoices) {
 
 
 void playRoutine() {
-    printf("Ce jeu se joue avec des mots de 5 lettres. Avec combien de lettre souhaitez-vous jouer ?\n");
+    printf("Ce jeu se joue avec des mots de 5 lettres. Avec combien de lettres souhaitez-vous jouer ?\n");
     wordSize = askUInt(); // BUG if the user input 0
     printf("Une partie comporte traditionnellement 6 essais. Combien en désirez-vous ?\n");
     maxTries = askUInt();
