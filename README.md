@@ -221,7 +221,6 @@ SELECT bot, wordlesize as "WS", dico as "D", score, COUNT(word) FROM wordle WHER
 +-----+----+---+-------+-------------+
 ```
 
-
 ## Sources
 
 - [3Blue1Brown vidéo sur la theorie de l'information pour le wordle](https://youtu.be/v68zYyaEmEA)
@@ -234,8 +233,3 @@ SELECT bot, wordlesize as "WS", dico as "D", score, COUNT(word) FROM wordle WHER
 Ce programme est sous licence GNU GPL v3.0 (cf LICENSE)
 
 *Par Sébastien Kerbourc'h et Adrien Wallon* 
-
-
-
-
-

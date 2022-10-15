@@ -108,9 +108,10 @@ int askChoice(char *choices[], int nbrOfChoices)
 /**
  * @brief Ask for the number of letters, number of tries, the dictionary et word to find
  */
-void playRoutine()
-{
-    printf("Ce jeu se joue avec des mots de 5 lettres. Avec combien de lettre souhaitez-vous jouer ?\n");
+
+void playRoutine() {
+    printf("Ce jeu se joue avec des mots de 5 lettres. Avec combien de lettres souhaitez-vous jouer ?\n");
+
     wordSize = askUInt(); // BUG if the user input 0
 
     printf("Une partie comporte traditionnellement 6 essais. Combien en désirez-vous ?\n");
