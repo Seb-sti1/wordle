@@ -32,7 +32,7 @@ int fromBase3(int* array, int arraySize) {
         power *= 3;
     } 
 
-    return power;
+    return n;
 
 }
 

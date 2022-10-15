@@ -4,6 +4,7 @@
 
 #include "bot.h"
 #include "utils.h"
+#include "word.h"
 
 
 float computeEntropy(char* word, int wordSize, char** dictionary, int dictionarySize) {
@@ -28,6 +29,38 @@ float computeEntropy(char* word, int wordSize, char** dictionary, int dictionary
         }
 
         free(pattern);
+    }
+
+    return entropy;
+}
+
+float computeEntropyOptimized(char* word, int wordSize, char** dictionary, int dictionarySize) {
+    int numberOfPattern = pow(3, wordSize);
+
+    int numberOfCompatibleWordPerPattern[numberOfPattern];
+    for (int i = 0; i < numberOfPattern; i++) {
+        numberOfCompatibleWordPerPattern[i] = 0;
+    }
+
+    for (int idx = 0; idx < dictionarySize; idx++) {
+        int* shouldHavePattern = verifyWord(dictionary[idx], word);
+
+        int patternIdx = fromBase3(shouldHavePattern, wordSize);
+
+        numberOfCompatibleWordPerPattern[patternIdx] = numberOfCompatibleWordPerPattern[patternIdx] + 1;
+
+        free(shouldHavePattern);
+    }
+    
+    float entropy = 0;
+
+    for (int i = 0; i < numberOfPattern; i++) {
+        int numberOfCompatibleWord = numberOfCompatibleWordPerPattern[i];
+
+        if (numberOfCompatibleWord > 0 ) {
+            entropy += ((float) numberOfCompatibleWord)/dictionarySize*log2(((float) dictionarySize)/numberOfCompatibleWord);
+        }
+
     }
 
     return entropy;
